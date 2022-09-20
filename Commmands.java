@@ -5,6 +5,7 @@ public class Commmands {
     public String method;
     public String command;
     public HashMap<String,String> commandMap;
+    RequestHand handle =new RequestHand();
     Scanner scan = new Scanner(System.in);
 
     public void displayCommands(){
@@ -19,19 +20,19 @@ public class Commmands {
             "Logout:\n"
         );
     }
-    public HashMap hashmap() throws NoSuchMethodException, SecurityException{
+//     public HashMap hashmap() throws NoSuchMethodException, SecurityException{
         
-        commandMap = new HashMap<String,String>();
-        commandMap.put("Register:","register");
-        commandMap.put("Login:","login");
-        commandMap.put("Post_product:","post_product");
-        commandMap.put("Performance:","performance");
-        commandMap.put("Update_product:","Update_product");
-        commandMap.put("Update_participant:","Update_participant");
-        commandMap.put("Logout:","logout");
-        return commandMap;
+//         commandMap = new HashMap<String,String>();
+//         commandMap.put("Register:","register");
+//         commandMap.put("Login:","login");
+//         commandMap.put("Post_product:","post_product");
+//         commandMap.put("Performance:","performance");
+//         commandMap.put("Update_product:","Update_product");
+//         commandMap.put("Update_participant:","Update_participant");
+//         commandMap.put("Logout:","logout");
+//         return commandMap;
 
-    }
+//     }
 
     // public String getCommand(){
     //     
@@ -52,7 +53,7 @@ public class Commmands {
       //       System.out.println(command + "is invalid \n");
       //       method="logout";
       //   }        
-       RequestHandler handle =new RequestHandler();
+       
        switch(command_map_key){
          case "Register:":
                handle.register(command);
