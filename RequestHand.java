@@ -6,10 +6,11 @@ import java.util.*;
 public class RequestHand {
     public boolean session =false;
     String auth_name = "";
+    String auth_username;
     /*
      * strage_path is the path to the starage for the users data files.
      */
-    public static final String storage_path = "C:\\project\\supportSystemCommad\\files\\";
+    public static final String storage_path = "C:\\project\\system\\supportSystem\\files\\store.txt";
 
     public String path= RequestHand.storage_path;
     public File fileObj;
@@ -33,9 +34,9 @@ public class RequestHand {
                                                 +"\nusername: "+username
                                                 +"\npassword: "+password );
        
-        String name =path.concat(username);
+        String name =path;
         Filemanager manageObj =new Filemanager(name);
-        manageObj.createNew_file(command);
+        manageObj.wrietToFile(command);
         // manageObj.wrietToFile(command);
 
     }
@@ -53,21 +54,28 @@ public class RequestHand {
         username=login_details[1];
         password=login_details[2];
         
-        String name =path.concat(username);
+        String name =path;
         // Filemanager manageObj =new Filemanager(name);
-        name = name.concat(".txt");
+       
         fileObj = new File(name);
         String read_username =" ";
         String read_password=" ";
         
         try {            
             Scanner myReader = new Scanner(fileObj);
-            
-            String  data = myReader.nextLine();
-            String [] details =data.split("\\s",0);
-            read_username=details[1];
-            read_password=details[2];
-            
+            while(myReader.hasNext()){
+                String  data = myReader.nextLine();
+                String [] details =data.split("\\s",0);
+                
+                if("Register:".equalsIgnoreCase(details[0])){
+                    
+                     if( username.equalsIgnoreCase(details[3])){
+                        read_username=details[3];
+                        read_password=details[4];
+                        break;
+                     }
+                }
+            }
             myReader.close();
             } catch (FileNotFoundException e) {
             System.out.println("An error occurred.\nUser may not exist. Try Registering");
@@ -80,6 +88,7 @@ public class RequestHand {
             if(read_password.equals(password)){
                 session = true;
                 auth_name = name;
+                auth_username= username;
                 System.out.println(" You have logined successfuly");
             }else{
                 System.out.println("Incorrect password");
@@ -90,9 +99,64 @@ public class RequestHand {
         
     }
     public void performance(String command){
-        System.out.println("performance");
+        if (session == true) {
+            boolean has_result=false;
+            String name ="C:\\project\\system\\supportsystem\\files\\result.txt";
+            // Filemanager manageObj =new Filemanager(name);
+        
+            fileObj = new File(name);
+            String score =" ";
+            String rank =" ";
+            String  data=" ";
+            String check ="Score: ".concat(auth_username);
+            
+            try {            
+                Scanner myReader = new Scanner(fileObj);
+                while(myReader.hasNext()){
+                    data = myReader.nextLine();
+                    if(data.startsWith(check)){
+                        has_result=true;
+                        break;
+                    }
+                }
+                String [] details =data.split("\\s",0);
+                score=details[1];
+                rank=details[2];
+                
+                myReader.close();
+                } catch (FileNotFoundException e) {
+                System.out.println("An error occurred.\nUser may not exist. Try Registering");
+                }
+
+                System.out.println("\nYour current scoe: "+ score 
+                                    +"\nYour rank: "+ rank );
+            if(!has_result){
+             
+                Filemanager manageObj =new Filemanager(path);
+                command = command.concat(" ").concat(auth_username).concat("end");
+                manageObj.wrietToFile(command);
+            }
+        }else{
+            System.out.println("You must login first");
+        }        
+    
     }
 
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param command
+     */
     public void post_product(String command){
         if (session == true) {
 
@@ -104,20 +168,26 @@ public class RequestHand {
                 System.out.println("Enter Post_product: Command with correct arguments");
                 return;
         }
-
+           
             String name,description,stock,rate_per_item;
             name =product_details[1];
             description=product_details[2].replaceAll("-"," ");
             stock=product_details[3];
             rate_per_item=product_details[4];
 
+            while(isNumeric(stock) && isNumeric(rate_per_item)){
+            
+                System.out.println("Enter Post_product: Command with correct arguments");
+                return;
+            }
 
             System.out.println("You have entered:\n"+"   name: "+name
                                                     +"\n description: "+description
                                                     +"\n stock: "+stock
                                                     +"\n rate_per_item: "+rate_per_item );
-
+            
             Filemanager manageObj =new Filemanager(name);
+            command=command.concat(" ").concat(auth_username).concat("end");
             manageObj.updateFile(command, auth_name);
             
         }else{
@@ -205,7 +275,8 @@ public class RequestHand {
         
         Commmands cmd =new Commmands();   
         cmd.displayCommands();
-        String command="";  
+        String command=""; 
+        String userInput; 
         Scanner input;
         while(!command.equalsIgnoreCase("Logout:")){    
             
@@ -218,7 +289,8 @@ public class RequestHand {
         //   r.close();
         //   br.close();
         input = new Scanner(System.in);
-          command = input.nextLine();     
+          userInput= input.nextLine(); 
+          command=userInput.stripLeading();    
           System.out.println(command);
 
          cmd.handleCommands(command);  

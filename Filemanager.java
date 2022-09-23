@@ -6,7 +6,7 @@ public class Filemanager {
     public File fileObj;
 
     Filemanager(String name){
-        this.file_name=name.concat(".txt");
+        this.file_name=name;
         }
 
     public void openFile(){
@@ -48,9 +48,11 @@ public class Filemanager {
 
     public void wrietToFile(String command){
     try{
-        FileWriter myWriter = new FileWriter(file_name);
-        myWriter.write(command);
-        myWriter.close();
+      BufferedWriter out = new BufferedWriter(
+        new FileWriter(file_name, true));
+        out.write(command);
+        out.write("\n");
+        out.close();
         System.out.println("Successfully wrote to the file.");
       } catch (IOException e) {
         System.out.println("An error occurred.");
@@ -61,26 +63,27 @@ public class Filemanager {
     public void updateFile(String command,String f_name){
       try{
         File fileObj = new File(f_name);
-        Scanner myReader = new Scanner(fileObj);   
-        ArrayList<String> data = new ArrayList<String>(); 
-        // String  data = myReader.nextLine();
-        while (myReader.hasNext()) {
-          data.add(myReader.nextLine()); 
-        }
-        String storable = "";
-        int i =0;
-        while (i < data.size()) {
-          storable = storable + data.get(i)+"\n";
-          if (data.get(i).split(" ")[1].equals(command.split(" ")[1])) {
-            System.out.println("Product already in table, use the update method to change item details");
-            return;
+        try (Scanner myReader = new Scanner(fileObj)) {
+          ArrayList<String> data = new ArrayList<String>(); 
+          // String  data = myReader.nextLine();
+          while (myReader.hasNext()) {
+            data.add(myReader.nextLine()); 
           }
-          i++;
-        }
-        System.out.println(storable);
-        command = storable + command;
-        myReader.close();
-          FileWriter myWriter = new FileWriter(f_name);
+          String storable = "";
+          int i =0;
+          while (i < data.size()) {
+            storable = storable + data.get(i)+"\n";
+            if (data.get(i).split(" ")[1].equals(command.split(" ")[1])) {
+              System.out.println("Product already in table, use the update method to change item details");
+              return;
+            }
+            i++;
+          }
+          System.out.println(storable);
+          command = storable + command;
+          myReader.close();
+        }   
+        FileWriter myWriter = new FileWriter(f_name);
           BufferedWriter myWriter2 = new BufferedWriter(myWriter);
           PrintWriter myWriter3 = new PrintWriter(f_name);
           myWriter3.println(command);
